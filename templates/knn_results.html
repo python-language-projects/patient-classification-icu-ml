@@ -47,9 +47,14 @@
                 <td>{{ "%.2f"|format(incorrect_pct) }}%</td>
               </tr>
               <tr>
-                <td><b>Time Efficiency</b></td>
-                <td>{{ "%.2f"|format(elapsed_time) }} ms</td>
-              </tr>
+    <td><b>Training Time</b></td>
+    <td>{{ "%.4f"|format(training_time) }} sec</td>
+</tr>
+
+<tr>
+    <td><b>Prediction Time</b></td>
+    <td>{{ "%.2f"|format(prediction_time) }} ms</td>
+</tr>
             </tbody>
           </table>
 
@@ -78,7 +83,8 @@
          "accuracy": accuracy|default(0),
          "correctPct": correct_pct|default(0),
          "incorrectPct": incorrect_pct|default(0),
-         "elapsedTime": elapsed_time|default(0)
+         "trainingTime": training_time|default(0),
+"predictionTime": prediction_time|default(0)
      } | tojson | safe }}'>
 </div>
 

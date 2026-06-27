@@ -444,15 +444,16 @@ def predict():
 def knn_results():
 
     metrics = joblib.load(
-    os.path.join(MODEL_DIR, "knn_metrics.pkl")
-)
+        os.path.join(MODEL_DIR, "knn_metrics.pkl")
+    )
 
     return render_template(
         "knn_results.html",
         accuracy=metrics["accuracy"],
         correct_pct=metrics["correct_pct"],
         incorrect_pct=metrics["incorrect_pct"],
-        elapsed_time=metrics["elapsed_time"]
+        training_time=metrics["training_time"],
+        prediction_time=metrics["prediction_time"]
     )
 
 
