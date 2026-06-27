@@ -5,7 +5,8 @@ const knnData = JSON.parse(knnDiv.dataset.knndata);
 const accuracy = knnData.accuracy;
 const correctPct = knnData.correctPct;
 const incorrectPct = knnData.incorrectPct;
-const elapsedTime = knnData.elapsedTime;
+const trainingTime = knnData.trainingTime;
+const predictionTime = knnData.predictionTime;
 
 // --- Bar Chart for Accuracy / Correct / Incorrect ---
 const ctx1 = document.getElementById('knnChart').getContext('2d');
@@ -35,30 +36,33 @@ new Chart(ctx1, {
     }
 });
 
-// --- Line Chart for Time Efficiency ---
+// --- Bar Chart for Time Efficiency ---
 const ctx2 = document.getElementById('timeChart').getContext('2d');
+
 new Chart(ctx2, {
-    type: 'line',
+    type: 'bar',
     data: {
-        labels: ['KNN Model'],
+        labels: ['Training Time', 'Prediction Time'],
         datasets: [{
-            label: 'Time Efficiency (ms)',
-            data: [elapsedTime],
-            borderColor: '#ff9800',
-            backgroundColor: 'rgba(255,152,0,0.2)',
-            fill: true,
-            tension: 0.3,
-            pointBackgroundColor: '#ff9800',
-            pointRadius: 6
+            label: 'Time (ms)',
+            data: [trainingTime * 1000, predictionTime],
+            backgroundColor: ['#17a2b8', '#ff9800']
         }]
     },
     options: {
         responsive: true,
-        plugins: { legend: { display: true } },
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
         scales: {
             y: {
                 beginAtZero: true,
-                title: { display: true, text: 'Milliseconds (ms)' }
+                title: {
+                    display: true,
+                    text: 'Milliseconds (ms)'
+                }
             }
         }
     }
