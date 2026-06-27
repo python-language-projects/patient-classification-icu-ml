@@ -1,17 +1,19 @@
 from flask import Flask, render_template, request, redirect, session, url_for, flash
-import numpy as np
+
 import joblib
-import webbrowser
-from werkzeug.serving import is_running_from_reloader
+
+
 import mysql.connector
 import pandas as pd
-import json
-from time import time
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-from sklearn.model_selection import train_test_split
+
+
+import os
 
 app=Flask(__name__)
-app.secret_key = "secret123"
+app.secret_key=os.getenv("SECRET_KEY","secret123")
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.path.join(BASE_DIR, "models")
 
 @app.route('/')
 def index():
@@ -38,12 +40,13 @@ def adminlogin():
 def get_db_connection():
     try:
         conn = mysql.connector.connect(
-            host="127.0.0.1",
-        port=3306,
-        user="root",
-        password="unlock",
-        database="medicaldb",
-         use_pure=True
+
+            host=os.getenv("DB_HOST"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            database=os.getenv("DB_NAME"),
+            port=int(os.getenv("DB_PORT",3306)),
+            use_pure=True
         )
         return conn
     except mysql.connector.Error as e:
@@ -264,7 +267,7 @@ def admin_updatepassword():
 
         # Update with new password
         cursor.execute("UPDATE tbladmin SET password=%s WHERE adminid=%s",
-                       (new_password, session["userid"]))
+                       (new_password, session["adminid"]))
         conn.commit()
         conn.close()
 
@@ -296,7 +299,7 @@ def member_updatepassword():
 
         # Verify current password
         cursor.execute("SELECT * FROM tblmembers WHERE memberid=%s AND password=%s",
-                       (session["adminid"], current_password))
+                       (session["memberid"], current_password))
         user = cursor.fetchone()
 
         if not user:
@@ -306,7 +309,7 @@ def member_updatepassword():
 
         # Update with new password
         cursor.execute("UPDATE tblmembers SET password=%s WHERE memberid=%s",
-                       (new_password, session["userid"]))
+                       (new_password, session["memberid"]))
         conn.commit()
         conn.close()
 
@@ -359,28 +362,20 @@ def logout():
     return redirect(url_for("index"))
 
 # === Load trained model and preprocessing objects ===
-knn_model = joblib.load("knn_model.pkl")
-scaler = joblib.load("scaler.pkl")
-le_dict = joblib.load("label_encoders.pkl")
-imputer_num = joblib.load("imputer_num.pkl")
-imputer_cat = joblib.load("imputer_cat.pkl")
+knn_model = joblib.load(os.path.join(MODEL_DIR, "knn_model.pkl"))
+scaler = joblib.load(os.path.join(MODEL_DIR, "scaler.pkl"))
+le_dict = joblib.load(os.path.join(MODEL_DIR, "label_encoders.pkl"))
+imputer_num = joblib.load(os.path.join(MODEL_DIR, "imputer_num.pkl"))
+imputer_cat = joblib.load(os.path.join(MODEL_DIR, "imputer_cat.pkl"))
 
-feature_names = joblib.load("feature_names.pkl")
-categorical_cols = joblib.load("categorical_cols.pkl")
-numeric_cols = joblib.load("numeric_cols.pkl")
+feature_names = joblib.load(os.path.join(MODEL_DIR, "feature_names.pkl"))
+categorical_cols = joblib.load(os.path.join(MODEL_DIR, "categorical_cols.pkl"))
+numeric_cols = joblib.load(os.path.join(MODEL_DIR, "numeric_cols.pkl"))
 
-# Build dropdown choices from training dataset (optional, for forms)
-# Build dropdown choices from training dataset
-training_data = pd.read_excel("TrainingDataset.xlsx", sheet_name="PCTrainingDataset")
 
-categorical_choices = {}
-for col in categorical_cols:
-    choices = training_data[col].dropna().unique()
-    # Ensure at least one option exists
-    if len(choices) == 0:
-        choices = ["Unknown"]
-    # Convert all to string
-    categorical_choices[col] = sorted([str(c) for c in choices])
+
+
+categorical_choices = joblib.load(os.path.join(MODEL_DIR, "categorical_choices.pkl"))
 
 
 
@@ -394,7 +389,10 @@ def predict():
         # Collect form input
             input_dict = {}
             for col in feature_names:
-                val = request.form[col]
+                val = request.form.get(col)
+
+                if val is None:
+                    raise ValueError(f"{col} is missing.")
                 form_values[col] = val
                 input_dict[col] = val
 
@@ -406,7 +404,12 @@ def predict():
             # --- Apply LabelEncoders (strings -> numbers) ---
             for col in categorical_cols:
                 le = le_dict[col]
-                input_df[col] = le.transform(input_df[col].astype(str))
+                value = str(input_df.at[0, col])
+
+                if value not in le.classes_:
+                    raise ValueError(f"Unknown value '{value}' for {col}")
+
+                input_df[col] = le.transform([value])
 
             # --- Handle numeric features ---
             input_df[numeric_cols] = imputer_num.transform(input_df[numeric_cols])
@@ -422,7 +425,11 @@ def predict():
             result = "High Risk" if prediction == 1 else "Low Risk"
 
         except Exception as e:
-            result = f"Error: {e}"
+            flash(
+        "Prediction failed. Check your input values.",
+        "danger"
+        )
+        result = None
 
     return render_template(
         "predict.html",
@@ -433,75 +440,24 @@ def predict():
         form_values=form_values
     )
 
-
-@app.route("/knn_results", methods=["GET"])
+@app.route("/knn_results")
 def knn_results():
-    try:
-        # Reload dataset
-        data = pd.read_excel("TrainingDataset.xlsx", sheet_name="PCTrainingDataset")
-        X = data.drop(columns=["Result"])
-        y = data["Result"]
 
-        # Load preprocessing objects
-        le_dict = joblib.load("label_encoders.pkl")
-        imputer_num = joblib.load("imputer_num.pkl")
-        imputer_cat = joblib.load("imputer_cat.pkl")
-        scaler = joblib.load("scaler.pkl")
-        knn_model = joblib.load("knn_model.pkl")
+    metrics = joblib.load(
+    os.path.join(MODEL_DIR, "knn_metrics.pkl")
+)
 
-        # Apply label encoding
-        for col, le in le_dict.items():
-            X[col] = X[col].astype(str)
-            X[col] = le.transform(X[col])
-
-        # Handle missing values
-        num_cols = X.select_dtypes(include=["float64", "int64"]).columns
-        cat_cols = list(le_dict.keys())
-
-        X[num_cols] = imputer_num.transform(X[num_cols])
-        X[cat_cols] = imputer_cat.transform(X[cat_cols])
-
-        # Scale numeric features
-        X[num_cols] = scaler.transform(X[num_cols])
-
-        # Train/test split
-        _, X_test, _, y_test = train_test_split(
-            X, y, test_size=0.2, random_state=42, stratify=y
-        )
-
-        # Predict
-        start = time()
-        y_pred = knn_model.predict(X_test)
-        end = time()
-        elapsed_time = (end - start) * 1000  # ms
-
-        # Metrics
-        accuracy = accuracy_score(y_test, y_pred) * 100
-        total = len(y_test)
-        correct = (y_test == y_pred).sum()
-        incorrect = total - correct
-        correct_pct = (correct / total) * 100
-        incorrect_pct = (incorrect / total) * 100
-
-        return render_template(
-            "knn_results.html",
-            accuracy=round(accuracy, 2),
-            correct_pct=round(correct_pct, 2),
-            incorrect_pct=round(incorrect_pct, 2),
-            elapsed_time=round(elapsed_time, 2)
-        )
-
-    except Exception as e:
-        return f"Error while generating KNN results: {e}"
-
+    return render_template(
+        "knn_results.html",
+        accuracy=metrics["accuracy"],
+        correct_pct=metrics["correct_pct"],
+        incorrect_pct=metrics["incorrect_pct"],
+        elapsed_time=metrics["elapsed_time"]
+    )
 
 
 #EXECUTION OF THE APPLICATION
 if __name__ == "__main__":
-    # Only open browser once (avoid duplicate tabs when reloader runs)
-    if not is_running_from_reloader():
-        webbrowser.open_new_tab("http://127.0.0.1:5000/")
-
-    app.run(port=5000, debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT",5000)))
 
 #END

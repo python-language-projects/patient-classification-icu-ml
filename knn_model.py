@@ -7,9 +7,15 @@ from sklearn.impute import SimpleImputer
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import joblib
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.path.join(BASE_DIR, "models")
+
+os.makedirs(MODEL_DIR, exist_ok=True)
 
 # === Load dataset ===
-file_path = "TrainingDataset.xlsx"
+file_path = os.path.join(BASE_DIR, "TrainingDataset.xlsx")
 data = pd.read_excel(file_path, sheet_name="PCTrainingDataset")
 
 # === Separate features and target ===
@@ -44,7 +50,11 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # === Build KNN classifier ===
-knn = KNeighborsClassifier(n_neighbors=5)
+knn = KNeighborsClassifier(
+    n_neighbors=5,
+    weights="distance",
+    metric="minkowski"
+)
 
 start_train = time.time()
 knn.fit(X_train, y_train)
@@ -62,14 +72,55 @@ print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
 print("Classification Report:\n", classification_report(y_test, y_pred))
 print(f"Training Time: {end_train - start_train:.4f}s | Prediction Time: {end_pred - start_pred:.4f}s")
 
-# === Save model and preprocessing objects ===
-joblib.dump(knn, "knn_model.pkl")
-joblib.dump(scaler, "scaler.pkl")
-joblib.dump(le_dict, "label_encoders.pkl")
-joblib.dump(imputer_num, "imputer_num.pkl")
-joblib.dump(imputer_cat, "imputer_cat.pkl")
+os.makedirs("models", exist_ok=True)
 
-# Save column info
-joblib.dump(X.columns.tolist(), "feature_names.pkl")
-joblib.dump(categorical_cols, "categorical_cols.pkl")
-joblib.dump(numeric_cols, "numeric_cols.pkl")
+
+metrics = {
+    "accuracy": round(acc * 100, 2),
+    "correct_pct": round(((y_test == y_pred).sum() / len(y_test)) * 100, 2),
+    "incorrect_pct": round(((y_test != y_pred).sum() / len(y_test)) * 100, 2),
+    "training_time": round(end_train - start_train, 4),
+    "prediction_time": round((end_pred - start_pred) * 1000, 2),
+    "test_samples": len(y_test),
+    "confusion_matrix": confusion_matrix(y_test, y_pred).tolist()
+}
+
+
+report = classification_report(
+    y_test,
+    y_pred,
+    output_dict=True
+)
+
+
+# === Save dropdown choices for Flask ===
+categorical_choices = {}
+
+for col in categorical_cols:
+    categorical_choices[col] = sorted(
+        data[col].dropna().astype(str).unique().tolist()
+    )
+
+
+# === Save model and preprocessing objects ===
+joblib.dump(metrics, os.path.join(MODEL_DIR, "knn_metrics.pkl"))
+
+joblib.dump(report, os.path.join(MODEL_DIR, "classification_report.pkl"))
+
+joblib.dump(categorical_choices, os.path.join(MODEL_DIR, "categorical_choices.pkl"))
+
+joblib.dump(knn, os.path.join(MODEL_DIR, "knn_model.pkl"))
+
+joblib.dump(scaler, os.path.join(MODEL_DIR, "scaler.pkl"))
+
+joblib.dump(le_dict, os.path.join(MODEL_DIR, "label_encoders.pkl"))
+
+joblib.dump(imputer_num, os.path.join(MODEL_DIR, "imputer_num.pkl"))
+
+joblib.dump(imputer_cat, os.path.join(MODEL_DIR, "imputer_cat.pkl"))
+
+joblib.dump(X.columns.tolist(), os.path.join(MODEL_DIR, "feature_names.pkl"))
+
+joblib.dump(categorical_cols, os.path.join(MODEL_DIR, "categorical_cols.pkl"))
+
+joblib.dump(numeric_cols, os.path.join(MODEL_DIR, "numeric_cols.pkl"))
