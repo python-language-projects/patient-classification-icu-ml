@@ -422,14 +422,20 @@ def predict():
 
             # --- Predict ---
             prediction = knn_model.predict(input_df)[0]
-            result = "High Risk" if prediction == 1 else "Low Risk"
+
+            print("Prediction =", prediction)
+            print("Prediction Type =", type(prediction))
+
+            if str(prediction).strip().lower() in ["1", "high risk", "high"]:
+                result = "High Risk"
+            else:
+                result = "Low Risk"
+
+            print("Result =", result)
 
         except Exception as e:
-            flash(
-        "Prediction failed. Check your input values.",
-        "danger"
-        )
-        result = None
+            flash("Prediction failed. Check your input values.", "danger")
+            result = None
 
     return render_template(
         "predict.html",
