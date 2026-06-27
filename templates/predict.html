@@ -1,0 +1,77 @@
+{% extends "memberlayout.html" %}
+
+{% block title %}Patient Risk Prediction{% endblock %}
+
+{% block content %}
+<section class="page-title bg-1">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="block text-center">
+          <h1 class="text-capitalize mb-4 fw-bold text-white">Patient Classification</h1>
+          <span class="text-white-50 fs-5">
+            High Risk and Low Risk Patient Prediction using KNN Model
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="card shadow-lg p-4 rounded">
+          <h3 class="text-center mb-4" style="color:#3fbbc0;">Patient Risk Prediction</h3>
+          
+          <form method="POST" action="{{ url_for('Predict') }}">
+            <div class="row">
+              {% for col in feature_names %}
+                <div class="col-md-6 mb-3">
+                  <label class="fw-bold">{{ col | replace("_", " ") | title }}</label>
+                  
+                  {% if col in categorical_cols %}
+                    <select class="form-control" name="{{ col }}" required>
+                      <option value="">-- Select --</option>
+                      {% for choice in categorical_choices.get(col, ["Unknown"]) %}
+                        <option value="{{ choice }}" {% if form_values.get(col) == choice %}selected{% endif %}>
+                          {{ choice }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                  {% else %}
+                    <input type="number" step="any" class="form-control"
+                           name="{{ col }}" required
+                           min="{% if 'age' in col %}0{% elif 'bp' in col or 'blood' in col %}60{% else %}0{% endif %}"
+                           max="{% if 'age' in col %}120{% elif 'bp' in col or 'blood' in col %}200{% else %}9999{% endif %}"
+                           value="{{ form_values.get(col, '') }}">
+                    <small class="form-text text-muted">
+                      {% if 'age' in col %}Typical range: 0–120 years
+                      {% elif 'bp' in col or 'blood' in col %}Normal range: 60–120 mmHg
+                      {% else %}Enter valid numeric value{% endif %}
+                    </small>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+            
+            <div class="text-center mt-4">
+              <button type="submit" class="btn btn-lg px-5" style="background:#3fbbc0; color:white;">
+                Predict
+              </button>
+            </div>
+          </form>
+
+          {% if result %}
+          <div class="alert mt-4 text-center {% if result == 'High Risk' %}alert-danger{% else %}alert-success{% endif %}">
+            Prediction: {{ result }}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

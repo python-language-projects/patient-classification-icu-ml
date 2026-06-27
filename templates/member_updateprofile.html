@@ -1,0 +1,64 @@
+{% extends "memberlayout.html" %}
+
+{% block title %}Update Profile{% endblock %}
+
+{% block content %}
+<section class="page-title bg-1">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="block text-center">
+          <h1 class="text-capitalize mb-4 fw-bold text-white">Update Your Profile</h1>
+          <span class="text-white-50 fs-5">Member Settings</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <div class="card shadow-lg p-4 rounded">
+        <h3 class="text-center mb-4" style="color:#3fbbc0;">Update Profile</h3>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('member_updateprofile') }}">
+          <div class="form-group mb-3">
+            <label>Member ID</label>
+            <input type="text" class="form-control" value="{{ member.memberid }}" readonly>
+          </div>
+
+          <div class="form-group mb-3">
+            <label>Name</label>
+            <input type="text" class="form-control" name="name" value="{{ member.name }}" required>
+          </div>
+
+          <div class="form-group mb-3">
+            <label>Mobile</label>
+            <input type="tel" class="form-control" name="mobile" value="{{ member.mobile }}" required pattern="[0-9]{10}">
+            <small class="form-text text-muted">Enter 10-digit mobile number</small>
+          </div>
+
+          <div class="form-group mb-3">
+            <label>Email ID</label>
+            <input type="email" class="form-control" name="emailid" value="{{ member.emailid }}" required>
+          </div>
+
+         
+
+          <button type="submit" class="btn btn-danger rounded-pill btn-lg">Update Profile</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'mainlayout.html' %}
+
+{% block content %}
+
+<!-- Page Title -->
+<section class="page-title bg-1">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="block text-center">
+          <span class="text-white fs-5">Welcome to the Member Portal</span>
+          <h1 class="text-capitalize mb-4 text-lg fw-bold">Member Login Form</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Member Login Form -->
+<section class="contact-form-wrap section" style="background: linear-gradient(135deg, #e0f7fa, #ffffff); min-height: 100vh;">
+  <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-lg-5 col-md-7">
+      
+      <!-- Flash Messages -->
+      <div class="container mb-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm rounded-3" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+      </div>
+
+      <!-- Card -->
+      <div class="card shadow-lg border-0 rounded-4 hover-card">
+        <div class="card-body p-5">
+          <h3 class="text-center mb-3 fw-bold text-success">Hello, Member 👋</h3>
+          <p class="text-muted text-center mb-4">Login to continue exploring your dashboard</p>
+
+          <form method="POST" action="{{ url_for('member_login') }}">
+            
+            <!-- Member ID -->
+            <div class="mb-4">
+              <label for="memberid" class="form-label fw-semibold">Member ID</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light"><i class="bi bi-person-badge"></i></span>
+                <input name="memberid" id="memberid" type="text" class="form-control" placeholder="Enter Member ID" required>
+              </div>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-4">
+              <label for="password" class="form-label fw-semibold">Password</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light"><i class="bi bi-lock-fill"></i></span>
+                <input name="password" id="password" type="password" class="form-control" placeholder="Enter Password" required>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid">
+              <button class="btn btn-success btn-lg rounded-pill shadow-sm" type="submit">
+                <i class="bi bi-box-arrow-in-right me-2"></i> Member Login
+              </button>
+            </div>
+          </form>
+
+          <!-- Extra Links -->
+          <div class="text-center mt-4">
+            <small class="text-muted">Don’t have an account? <a href="#" class="text-decoration-none">Register</a></small><br>
+            <small class="text-muted">Forgot password? <a href="#" class="text-decoration-none">Reset here</a></small>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+<!-- Custom Hover Effect -->
+<style>
+  .hover-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .hover-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.15);
+  }
+</style>
+
+{% endblock %}

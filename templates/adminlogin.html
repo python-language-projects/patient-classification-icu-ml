@@ -1,0 +1,78 @@
+{% extends 'mainlayout.html' %}
+
+{% block content %}
+
+<section class="page-title bg-1">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="block text-center">
+          <span class="text-white fs-5">Secure Access for Administrators</span>
+          <h1 class="text-capitalize mb-4 text-lg fw-bold">Admin Login Form</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Admin Login Form -->
+<section class="contact-form-wrap section">
+  <div class="container d-flex justify-content-center">
+    <div class="col-lg-6 col-md-8">
+      
+      <!-- Flash messages -->
+      <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm rounded-3" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+      </div>
+
+      <!-- Card Design -->
+      <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-5">
+          <h3 class="text-center mb-4 fw-semibold text-primary">Welcome Back, Admin</h3>
+          <p class="text-muted text-center mb-4">Please enter your credentials to access the system</p>
+
+          <form method="POST" action="{{ url_for('admin_login') }}">
+            <div class="mb-4">
+              <label for="adminid" class="form-label fw-semibold">Admin ID</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light"><i class="bi bi-person-lock"></i></span>
+                <input name="adminid" id="adminid" type="text" class="form-control" placeholder="Enter Admin ID" required>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="password" class="form-label fw-semibold">Password</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light"><i class="bi bi-shield-lock"></i></span>
+                <input name="password" id="password" type="password" class="form-control" placeholder="Enter Password" required>
+              </div>
+            </div>
+
+            <div class="d-grid">
+              <button class="btn btn-primary btn-lg rounded-pill shadow-sm" type="submit">
+                <i class="bi bi-box-arrow-in-right me-2"></i> Admin Login
+              </button>
+            </div>
+          </form>
+
+          <div class="text-center mt-4">
+            <small class="text-muted">Forgot password? <a href="#" class="text-decoration-none">Reset here</a></small>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+{% endblock %}

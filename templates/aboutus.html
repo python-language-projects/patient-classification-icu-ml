@@ -1,0 +1,68 @@
+{% extends 'mainlayout.html' %}
+
+{% block content %}
+
+<section class="page-title bg-1">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="block text-center">
+          <span class="text-white">Patient Classification</span>
+          <h1 class="text-capitalize mb-5 text-lg">About Us</h1>
+
+          <!-- <ul class="list-inline breadcumb-nav">
+            <li class="list-inline-item"><a href="index.html" class="text-white">Home</a></li>
+            <li class="list-inline-item"><span class="text-white">/</span></li>
+            <li class="list-inline-item"><a href="#" class="text-white-50">Doctor Details</a></li>
+          </ul> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section doctor-single">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-4 col-md-6">
+				<div class="doctor-img-block">
+					<img src="static/images/team/1.jpg" alt="" class="img-fluid w-100">
+
+					<div class="info-block mt-4">
+						<h4 class="mb-0">Alexandar james</h4>
+						<p>Orthopedic Surgary</p>
+
+						<ul class="list-inline mt-4 doctor-social-links">
+							<li class="list-inline-item"><a href="#!"><i class="icofont-facebook"></i></a></li>
+							<li class="list-inline-item"><a href="#!"><i class="icofont-twitter"></i></a></li>
+							<li class="list-inline-item"><a href="#!"><i class="icofont-skype"></i></a></li>
+							<li class="list-inline-item"><a href="#!"><i class="icofont-linkedin"></i></a></li>
+							<li class="list-inline-item"><a href="#!"><i class="icofont-pinterest"></i></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-lg-8 col-md-6">
+				<div class="doctor-details mt-4 mt-lg-0">
+					<h2 class="text-md">Patient Classification</h2>
+					<div class="divider my-4"></div>
+					<p>This work contains the classification of patients in an Emergency Department in a hospital according to their critical conditions. Machine learning or AI can be applied based on the patient’s condition to quickly determine if the patient requires urgent medical intervention from the clinicians or not. Basic vital signs like Systolic Blood Pressure (SBP), Diastolic Blood Pressure (DBP), and Respiratory Rate (RR), Oxygen saturation (SPO2), Random Blood Sugar (RBS), Temperature, and Pulse Rate (PR) are used as the input for the patients’ risk level identification. High-risk or non-risk categories are considered as the output for patient classification. </p>
+					<p>AI techniques such as Gaussian NB, KNN or DT are used for the classification. We'll use a variety of efficient AI methods before deciding which one is best for the model. Existing systems rely on classical learning models, which are inefficient and imprecise. They aren't as accurate as the proposed model and take a little longer to process. There are many research works on this topic where they have built models and shown results generated using R language, Python language and data science tools. But all these works are just models, cannot be used as application useful in real time. In our project work we build an application with model that can predict high risk patients and low risk patients in an emergency department and provides doctors with the information of how to handle patients and treat better. Proposed system is a real time medical system useful for hospitals and doctors and built using tools such as Visual Studio tool and MySQL Server tool.</p>
+
+					<a href="{{ url_for('member_login') }}" class="btn btn-main-2 btn-round-full mt-3">Get Access<i
+							class="icofont-simple-right ml-2  "></i></a>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+
+
+
+
+
+{% endblock %}

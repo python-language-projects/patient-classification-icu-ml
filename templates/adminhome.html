@@ -1,0 +1,84 @@
+{% extends 'adminlayout.html' %}
+
+{% block content %}
+
+<!-- Page Header -->
+<section class="page-title bg-1">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="block text-center">
+          <h1 class="text-capitalize mb-4 fw-bold text-white">Admin Dashboard</h1>
+          <span class="text-white-50 fs-5">Welcome, {{ session['adminid'] }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Dashboard Content -->
+<section class="section py-5">
+  <div class="container">
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm rounded-3" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+   
+    <!-- Quick Actions -->
+    <div class="row g-4 mb-5">
+      <div class="col-md-4">
+        <a href="{{ url_for('add_user') }}" class="text-decoration-none">
+          <div class="card shadow-sm border-0 rounded-4 text-center p-4 hover-card">
+            <div class="text-success fs-1"><i class="bi bi-person-plus-fill"></i></div>
+            <h5 class="mt-3">Add Member</h5>
+            <p class="text-muted small">Register a new member to the system</p>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="{{ url_for('users_list') }}" class="text-decoration-none">
+          <div class="card shadow-sm border-0 rounded-4 text-center p-4 hover-card">
+            <div class="text-primary fs-1"><i class="bi bi-list-ul"></i></div>
+            <h5 class="mt-3">Manage Members</h5>
+            <p class="text-muted small">View, edit, and delete members</p>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="{{ url_for('admin_updatepassword') }}" class="text-decoration-none">
+          <div class="card shadow-sm border-0 rounded-4 text-center p-4 hover-card">
+            <div class="text-info fs-1"><i class="bi bi-bar-chart-fill"></i></div>
+            <h5 class="mt-3">Reports</h5>
+            <p class="text-muted small">View system usage and analytics</p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    
+
+  </div>
+</section>
+
+<!-- Hover Effect -->
+<style>
+  .hover-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .hover-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0px 12px 28px rgba(0, 0, 0, 0.15);
+  }
+</style>
+
+{% endblock %}

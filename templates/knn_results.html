@@ -1,0 +1,87 @@
+{% extends "memberlayout.html" %}
+
+{% block title %}KNN Model Results{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-title bg-1">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="block text-center">
+          <h1 class="text-capitalize mb-4 fw-bold text-white">KNN Model Results</h1>
+          <span class="text-white-50 fs-5">Patient Classification using KNN Model</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="card shadow-lg p-4 rounded">
+          <h3 class="text-center mb-4" style="color:#3fbbc0;">KNN Model Results</h3>
+
+          <!-- Table -->
+          <table class="table table-bordered text-center">
+            <thead style="background-color:#3fbbc0; color:white;">
+              <tr>
+                <th>Parameters</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>Accuracy</b></td>
+                <td>{{ "%.2f"|format(accuracy) }}%</td>
+              </tr>
+              <tr>
+                <td><b>Correctly Predicted</b></td>
+                <td>{{ "%.2f"|format(correct_pct) }}%</td>
+              </tr>
+              <tr>
+                <td><b>Incorrectly Predicted</b></td>
+                <td>{{ "%.2f"|format(incorrect_pct) }}%</td>
+              </tr>
+              <tr>
+                <td><b>Time Efficiency</b></td>
+                <td>{{ "%.2f"|format(elapsed_time) }} ms</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Charts -->
+          <div class="row mt-4">
+            <div class="col-md-6">
+              <canvas id="knnChart" height="250"></canvas>
+            </div>
+            <div class="col-md-6">
+              <canvas id="timeChart" height="250"></canvas>
+            </div>
+          </div>
+
+          <div class="text-center mt-4">
+            <a href="{{ url_for('Predict') }}" class="btn btn-primary">Go to Prediction</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pass Python variables via data attribute -->
+<div id="knn-metrics" 
+     data-knndata='{{ {
+         "accuracy": accuracy|default(0),
+         "correctPct": correct_pct|default(0),
+         "incorrectPct": incorrect_pct|default(0),
+         "elapsedTime": elapsed_time|default(0)
+     } | tojson | safe }}'>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/chart_script.js') }}"></script>
+{% endblock %}

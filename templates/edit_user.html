@@ -1,0 +1,47 @@
+{% extends 'adminlayout.html' %}
+
+{% block content %}
+
+<section class="section py-5">
+  <div class="container">
+    <div class="card shadow-sm border-0 rounded-4">
+      <div class="card-body p-5">
+        <h3 class="fw-bold text-warning mb-4"><i class="bi bi-pencil-square me-2"></i>Edit Member</h3>
+        
+        <form method="POST" action="{{ url_for('edit_user', memberid=member.memberid) }}">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <label class="form-label">Member ID</label>
+              <input type="text" name="memberid" class="form-control" value="{{ member.memberid }}" readonly>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Password</label>
+              <input type="password" name="password" class="form-control" value="{{ member.password }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Full Name</label>
+              <input type="text" name="name" class="form-control" value="{{ member.name }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Mobile</label>
+              <input type="text" name="mobile" class="form-control" value="{{ member.mobile }}" required>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label">Email ID</label>
+              <input type="email" name="emailid" class="form-control" value="{{ member.emailid }}" required>
+            </div>
+          </div>
+
+          <div class="mt-4 d-flex justify-content-between">
+            <a href="{{ url_for('users_list') }}" class="btn btn-secondary rounded-pill"><i class="bi bi-arrow-left me-2"></i>Back</a>
+            <button type="submit" class="btn btn-warning rounded-pill">
+              <i class="bi bi-save me-2"></i> Update Member
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

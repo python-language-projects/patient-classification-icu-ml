@@ -1,0 +1,72 @@
+{% extends "memberlayout.html" %}
+
+{% block title %}Member Home{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-title bg-1">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="block text-center">
+          <h1 class="text-capitalize mb-4 fw-bold text-white">Member Dashboard</h1>
+          <span class="text-white-50 fs-5">Welcome, {{ session['memberid'] }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="card shadow-lg p-5 rounded">
+        
+          
+          <div class="row text-center">
+            
+            <!-- ML Model Results -->
+            <div class="col-md-4 mb-4">
+              <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                  <i class="icofont-chart-bar-graph text-primary mb-3" style="font-size:40px;"></i>
+                  <h5 class="card-title">ML Model Results</h5>
+                  <p class="card-text">View accuracy and performance of the trained models.</p>
+                  <a href="{{ url_for('knn_results') }}" class="btn btn-danger rounded-pill btn-lg">View Results</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Predict -->
+            <div class="col-md-4 mb-4">
+              <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                  <i class="icofont-heartbeat text-danger mb-3" style="font-size:40px;"></i>
+                  <h5 class="card-title">Patient Prediction</h5>
+                  <p class="card-text">Predict if a patient is at High Risk or Low Risk.</p>
+                  <a href="{{ url_for('Predict') }}" class="btn btn-danger rounded-pill btn-lg">Predict</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Change Password -->
+            <div class="col-md-4 mb-4">
+              <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                  <i class="icofont-lock text-success mb-3" style="font-size:40px;"></i>
+                  <h5 class="card-title">Change Password</h5>
+                  <p class="card-text">Update your account password for security.</p>
+                  <a href="{{ url_for('member_updatepassword') }}" class="btn btn-danger rounded-pill btn-lg">Change Password</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
